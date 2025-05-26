@@ -1,7 +1,7 @@
 // auth.js
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
-const { registrarHistorial } = require('./microservicio-historial');
+ const axios = require('axios');
 const pool = require('./db/db.js');
 
 //llamo a la funcion de refresh token
@@ -56,12 +56,20 @@ const authenticateUser = async (req, res, next) => {
       
   if (!username || !password) {
 
-    await registrarHistorial({
-        username:'no proporcionado',
-        accion: 'login',
-        estado: 'error',
-        mensaje: 'Usuario no encontrado o pass incorrecta'
-      });
+    await axios.post('http://localhost:7001/registrar-historial', {
+      username:'no proporcionado',
+      accion: 'login',
+      estado: 'fallo',
+      mensaje: 'Contraseña incorrecta'
+    });
+
+
+    // await registrarHistorial({
+    //     username:'no proporcionado',
+    //     accion: 'login',
+    //     estado: 'error',
+    //     mensaje: 'Usuario no encontrado o pass incorrecta'
+    //   });
 
     return res.status(400).json({ error: 'El nombre de usuario y la contraseña son requeridos' });
   }
@@ -71,23 +79,27 @@ const authenticateUser = async (req, res, next) => {
   const validPassword = process.env.AUTH_PASSWORD;
 
   if (validPassword !== password) {
-      await registrarHistorial({
-        username,
-        accion: 'login',
-        estado: 'error',
-        mensaje: 'Contraseña incorrecta'
-      });
+
+    await axios.post('http://localhost:7001/registrar-historial', {
+      username,
+      accion: 'login',
+      estado: 'fallo',
+      mensaje: 'Contraseña incorrecta'
+    });
       }
         if (validUsername !== username) {
-      await registrarHistorial({
-        username,
-        accion: 'login',
-        estado: 'error',
-        mensaje: 'Usuario distinto o incorrecta'
-      });
+   
       }
   if (username === validUsername && password === validPassword) {
     req.user = { username };
+
+    await axios.post('http://localhost:7001/registrar-historial', {
+      username,
+      accion: 'login',
+      estado: 'Correcto',
+      mensaje: 'Logeo exitoso mouito gostosso'
+    });
+
     next();
   } else {
     res.status(401).json({ error: 'Credenciales inválidas' });

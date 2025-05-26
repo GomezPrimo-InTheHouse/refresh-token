@@ -59,12 +59,14 @@ app.post('/login', authenticateUser, async (req, res) => {
    await pool.query(query, [username, accessToken, refreshToken]);
 
     // Registro y hago uso del microservicio de historial de login
-   await registrarHistorial({
-        username,
-        accion: 'login',
-        estado: 'exito',
-        mensaje: 'Usuario inició sesión correctamente'
-      });
+  //  await registrarHistorial({
+  //       username,
+  //       accion: 'login',
+  //       estado: 'exito',
+  //       mensaje: 'Usuario inició sesión correctamente'
+  //     });
+
+      
 
     res.json({ 
       accessToken,
@@ -147,8 +149,6 @@ app.listen(PORT, () => {
   //llamo a la functon de auto refresh unos minutos antes de que expire el token
    
 });
-
-
 
 
 app.post('/refresh', async (req, res) => {
