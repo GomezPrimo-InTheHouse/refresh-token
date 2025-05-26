@@ -188,7 +188,7 @@ app.post('/refresh', async (req, res) => {
 app.post('/create-user', async (req, res) => {
   const { name, password, role } = req.body;
 
-  const allowedRoles = process.env.ROLE.split(','); // ['admin', 'user']
+  const allowedRoles = process.env.ROLE.split(','); 
 
   try {
     // Validar campos requeridos
