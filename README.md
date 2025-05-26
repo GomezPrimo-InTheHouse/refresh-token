@@ -8,62 +8,16 @@ Este proyecto es un backend en Node.js que implementa un sistema de autenticaci�
 
 Configura un archivo `.env` en la raíz del proyecto con las siguientes variables:
 
-```bash
+
 # Credenciales de autenticación
 AUTH_USERNAME=JULIAN
 AUTH_PASSWORD=1234
 JWT_SECRET=supersecret
-
+ROLE = admin, user
 # Configuración de PostgreSQL
 PGUSER=postgres
 PGPASSWORD=
-PGHOST=localhostNo hay código seleccionado para mejorar. Sin embargo, se puede agregar un ejemplo de código para implementar la autenticación con JWT y almacenamiento de tokens en PostgreSQL. Aquí hay un ejemplo:
-
-```javascript
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const { Pool } = require('pg');
-
-const app = express();
-app.use(express.json());
-
-const pool = new Pool({
-  user: process.env.PGUSER,
-  host: process.env.PGHOST,
-  database: process.env.PGDATABASE,
-  password: process.env.PGPASSWORD,
-  port: process.env.PGPORT,
-});
-
-const jwtSecret = process.env.JWT_SECRET;
-
-app.post('/login', async (req, res) => {
-  const { username, password } = req.body;
-  const user = await pool.query('SELECT * FROM users WHERE name = $1 AND password = $2', [username, password]);
-  if (user.rows.length === 0) {
-    return res.status(401).json({ message: 'Credenciales inválidas' });
-  }
-  const accessToken = jwt.sign({ username }, jwtSecret, { expiresIn: '1h' });
-  const refreshToken = jwt.sign({ username }, jwtSecret, { expiresIn: '7d' });
-  await pool.query('INSERT INTO tokens (username, access_token, refresh_token) VALUES ($1, $2, $3)', [username, accessToken, refreshToken]);
-  return res.json({ accessToken, refreshToken });
-});
-
-app.post('/refresh-token', async (req, res) => {
-  const { refreshToken } = req.body;
-  try {
-    const decoded = jwt.verify(refreshToken, jwtSecret);
-    const accessToken = jwt.sign({ username: decoded.username }, jwtSecret, { expiresIn: '1h' });
-    return res.json({ accessToken });
-  } catch (error) {
-    return res.status(401).json({ message: 'Token de refresco inválido' });
-  }
-});
-
-app.listen(3000, () => {
-  console.log('Servidor escuchando en el puerto 3000');
-});
-```
+PGHOST=localhost
 PGPORT=
 PGDATABASE=
 
